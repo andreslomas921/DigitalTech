@@ -1,0 +1,6 @@
+{
+  "name": "Laptops Tech Pro - Página de Ventas",
+  "description": "Landing page de alta conversión para Laptops Tech Pro, diseñada para estudiantes, freelancers y profesionales modernos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
