@@ -22,7 +22,9 @@ import {
   Phone,
   MapPin,
   Store,
-  Layers
+  Layers,
+  X,
+  Lock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Product } from './types';
@@ -307,6 +309,38 @@ export default function App() {
   const [formSpecs, setFormSpecs] = useState('');
   const [formImage, setFormImage] = useState('');
   const [adminStatus, setAdminStatus] = useState('');
+
+  // Admin lock authentication states
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return localStorage.getItem('isAdminLoggedIn') === 'true';
+  });
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminUser, setAdminUser] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
+  const [adminLoginError, setAdminLoginError] = useState('');
+
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminUser.trim().toLowerCase() === 'admin' && adminPassword === '172839al') {
+      setIsAdminLoggedIn(true);
+      localStorage.setItem('isAdminLoggedIn', 'true');
+      setIsAdminModalOpen(false);
+      setAdminLoginError('');
+      setAdminUser('');
+      setAdminPassword('');
+      setAdminStatus('Sesión de administrador iniciada correctamente.');
+      setTimeout(() => setAdminStatus(''), 4500);
+    } else {
+      setAdminLoginError('Usuario o clave incorrectos.');
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminLoggedIn(false);
+    localStorage.removeItem('isAdminLoggedIn');
+    setAdminStatus('Sesión de administrador cerrada.');
+    setTimeout(() => setAdminStatus(''), 4500);
+  };
 
   // Auto-populate form fields when selecting a product to edit
   const handleSelectProductToEdit = (prodId: string) => {
@@ -807,16 +841,15 @@ export default function App() {
 
           {/* MAIN HEADLINE */}
           <h1 className="text-3xl md:text-5xl lg:text-5xl font-black text-center text-zinc-950 max-w-4xl mx-auto leading-[1.12] tracking-tight">
-            ¿Sigues usando una computadora lenta, anticuada o prestada que te hace{' '}
-            <span className="text-red-650 underline decoration-red-550/50 decoration-wavy underline-offset-8">
-              perder tiempo, dinero y oportunidades
-            </span>{' '}
-            cada día?
+            Potencia, diseño y rendimiento en un solo lugar.{' '}
+            <span className="text-blue-700">
+              Equipos premium para quienes exigen más.
+            </span>
           </h1>
 
           {/* SUBHEADLINE */}
           <p className="text-base md:text-xl text-zinc-700 font-medium text-center max-w-3xl mx-auto leading-relaxed">
-            Descubre la nueva laptop <strong className="text-zinc-950">Lenovo IdeaPad Slim 3 Ryzen 3 / Serie 7000</strong> que estudiantes, freelancers y profesionales están eligiendo en Ecuador para trabajar rápido, ganar más y no quedarse atrás — por solo <strong className="text-blue-700 font-extrabold text-lg md:text-2xl">${469} USD</strong> con garantía y envío inmediato.
+            Tecnología elegante, rápida y confiable. Descubre una experiencia premium en cada equipo.
           </p>
 
           {/* Dynamic Trust badging & Urgent Countdown */}
@@ -847,22 +880,22 @@ export default function App() {
               <div className="bg-white border border-zinc-150 p-4 rounded-xl flex items-start gap-3 shadow-sm hover:translate-x-1 transition-transform">
                 <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">✓</span>
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-800">Procesador Ryzen 3</h4>
-                  <p className="text-xs text-zinc-500 mt-1">Multiplica por 3 la velocidad con arquitectura Zen de la Serie 7000.</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-800">Chips de IA para PC AMD</h4>
+                  <p className="text-xs text-zinc-500 mt-1">Nuevos procesadores de AMD Ryzen equipados con unidades de aceleración de IA nativa para maximizar la potencia y eficiencia en computadoras personales.</p>
                 </div>
               </div>
               <div className="bg-white border border-zinc-150 p-4 rounded-xl flex items-start gap-3 shadow-sm hover:translate-x-1 transition-transform">
                 <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">✓</span>
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-800 font-sans">Batería Prolongada</h4>
-                  <p className="text-xs text-zinc-500 mt-1">Trabaja o estudia todo el día en Shushufindi sin cargador molesto.</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-800 font-sans">Sistema AMD "Helios" AI Rack</h4>
+                  <p className="text-xs text-zinc-500 mt-1">Sistemas de centros de datos diseñados para competir a escala con Nvidia, igualando las 72 GPU de la competencia con 72 chips de alto rendimiento MI455X en un solo rack.</p>
                 </div>
               </div>
               <div className="bg-white border border-zinc-150 p-4 rounded-xl flex items-start gap-3 shadow-sm hover:translate-x-1 transition-transform">
                 <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">✓</span>
                 <div>
-                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-805 font-sans">Garantía Asegurada</h4>
-                  <p className="text-xs text-zinc-500 mt-1">Respaldo directo de Digital Tech y soporte posventa humano.</p>
+                  <h4 className="text-xs font-black uppercase tracking-wider text-zinc-805 font-sans">Serie de GPU MI500</h4>
+                  <p className="text-xs text-zinc-500 mt-1">Próxima generación de procesadores que promete un aumento espectacular de hasta 1,000 veces en el rendimiento de IA comparado con la serie MI300X.</p>
                 </div>
               </div>
             </div>
@@ -871,31 +904,18 @@ export default function App() {
             <div className="lg:col-span-8 order-1 lg:order-2 text-center relative group">
               <div className="absolute inset-0 bg-blue-500/5 rounded-3xl filter blur-2xl group-hover:scale-105 transition-transform duration-700"></div>
               <img
-                src="https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?q=80&w=800&auto=format&fit=crop"
-                alt="Lenovo IdeaPad Slim 3"
+                src="https://images.unsplash.com/photo-1591453089816-0fbb971b454c?q=80&w=800&auto=format&fit=crop"
+                alt="AMD Helios AI Rack"
                 referrerPolicy="no-referrer"
                 className="relative rounded-3xl border border-zinc-200 shadow-xl mx-auto w-full max-w-2xl bg-white transform group-hover:scale-[1.01] transition-transform duration-500"
               />
               <p className="text-[10px] text-zinc-400 mt-3 italic">
-                Imagen real de exhibición: Lenovo IdeaPad Slim 3 con procesador AMD Ryzen 3 y diseño ultra estilizado.
+                Imagen de referencia: Supercomputadora y superestructura AMD "Helios" AI Rack de próxima generación para acelerar centros de datos masivos.
               </p>
             </div>
           </div>
 
-          {/* Action CTA Block */}
-          <div className="text-center pt-4">
-            <button
-              onClick={() => handleOpenCheckout(469, "Lenovo IdeaPad Slim 3 Ryzen 3 / Serie 7000", "lenovo-slim3")}
-              className="w-full sm:w-auto text-sm md:text-base font-black px-10 py-5 bg-blue-600 hover:bg-blue-750 text-white rounded-2xl shadow-xl shadow-blue-500/15 hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer inline-flex items-center justify-center gap-3"
-              id="heroUpgradeButton"
-            >
-              🔒 SÍ, QUIERO MI LENOVO IDEAPAD SLIM 3 POR SOLO ${469}
-            </button>
-            <div className="flex items-center justify-center gap-6 mt-4.5 text-xs text-zinc-500">
-              <span className="flex items-center gap-1"><ShieldCheck className="w-4 h-4 text-blue-600" /> Garantía de Satisfacción</span>
-              <span className="flex items-center gap-1"><Truck className="w-4 h-4 text-blue-600" /> Envío seguro prioritario</span>
-            </div>
-          </div>
+
         </div>
       </header>
 
@@ -986,46 +1006,7 @@ export default function App() {
             <div className="w-16 h-1 bg-emerald-500 mx-auto rounded-full"></div>
           </div>
 
-          {/* Solution Paragraphs with beautiful layouts */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-zinc-900 border border-zinc-800 p-6 md:p-10 rounded-3xl">
-            <div className="space-y-5 text-sm md:text-base text-zinc-400 leading-relaxed font-sans">
-              <p className="font-bold text-zinc-100 text-lg">
-                No es magia. No es un milagro tecnológico. Es la combinación perfecta entre rendimiento real, precio justo y respaldo integral.
-              </p>
-              <p>
-                Nuestras laptops están diseñadas expresamente para el mundo real: para el estudiante que necesita entregar trabajos a tiempo, para el profesional que no puede permitirse que su herramienta falle, para el emprendedor que construye su futuro desde la pantalla y para cualquier persona que desea explorar el mundo digital sin complicaciones técnicas de por medio.
-              </p>
-              <p>
-                Olvídate de computadoras baratas que se calientan excesivamente a los 20 minutos, de pantallas oscuras que fatigan la vista o de memorias RAM que colapsan al abrir tres pestañas. Con una Laptop Tech Pro tienes una máquina lista para responder y apoyarte.
-              </p>
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <p className="text-[13px] text-emerald-400 font-semibold leading-normal">
-                  Y a diferencia de otras opciones comerciales, no tendrás que hipotecar tu futuro para pagarla. Por <strong className="text-zinc-100">solo $469</strong> tienes acceso a tecnología robusta desde el primer encendido.
-                </p>
-              </div>
-            </div>
 
-            <div className="relative group text-center">
-              <div className="absolute inset-0 bg-emerald-500/10 rounded-2xl filter blur-xl"></div>
-              <img
-                src="/src/assets/images/laptop_tech_pro_1780006066929.png"
-                alt="Tech Pro Lateral Angle"
-                referrerPolicy="no-referrer"
-                className="relative rounded-2xl border border-zinc-800 shadow-xl mx-auto w-full max-w-sm transform group-hover:rotate-1 duration-500"
-              />
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
-                <span className="px-3 py-1 bg-zinc-905 border border-zinc-800 rounded-full text-[11px] text-zinc-300 font-semibold uppercase tracking-wider">
-                  Chasis Sólido
-                </span>
-                <span className="px-3 py-1 bg-zinc-905 border border-zinc-800 rounded-full text-[11px] text-zinc-300 font-semibold uppercase tracking-wider">
-                  Teclado Español
-                </span>
-                <span className="px-3 py-1 bg-zinc-905 border border-zinc-800 rounded-full text-[11px] text-zinc-300 font-semibold uppercase tracking-wider">
-                  Intel/AMD Inside
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* Specs Hotspots interactive display */}
           <SpecsHotspots />
@@ -1133,93 +1114,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* BLOCK 7: SOCIAL PROOF / TESTIMONIALS (LIGHT GREY SHADE-1) */}
-      <section className="bg-zinc-50 text-zinc-950 py-16 md:py-24 border-b border-zinc-200" id="testimonios">
-        <div className="max-w-5xl mx-auto px-6 space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <span className="text-emerald-600 font-extrabold tracking-widest text-[11px] md:text-xs uppercase block">
-              CONFIANZA COMPARTIDA
-            </span>
-            <h2 className="text-2xl md:text-4xl font-black text-zinc-900 tracking-tight leading-snug">
-              &ldquo;No pensé que $469 pudieran cambiar tanto mi día a día&rdquo;
-            </h2>
-            <div className="w-12 h-1 bg-emerald-500 mx-auto mt-3 rounded-full"></div>
-          </div>
 
-          {/* Customer grid layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-            {[
-              {
-                quote: "Soy estudiante de administración y llevaba dos años usando la laptop de mi hermana, coordinando horarios con ella para poder avanzar con mis trabajos. Cuando por fin compré mi propia laptop aquí, sentí que por primera vez el tiempo era completamente mío. Rápida, cómoda, sin fallas. La recomiendo al 100% y la garantía de 6 meses me dio mucha confianza para dar el paso.",
-                name: "Mariana G.",
-                age: 23,
-                role: "Estudiante universitaria",
-                initial: "M",
-                region: "CDMX"
-              },
-              {
-                quote: "Vendo por Instagram y necesito estar pendiente de mensajes, editar fotos, revisar mis cuentas y a veces hasta hacer videollamadas con proveedores. Mi laptop anterior se calentaba tanto que me daba miedo dejarla encendida. Esta nueva es una bestia tranquila: hace todo lo que le pido, se mantiene fresca y la batería me dura lo suficiente para trabajar fuera de casa. Fue la mejor inversión que hice para mi negocio este año.",
-                name: "Sofía R.",
-                age: 28,
-                role: "Emprendedora digital",
-                initial: "S",
-                region: "Querétaro"
-              },
-              {
-                quote: "Trabajo con Excel todo el día, tengo archivos de contabilidad bastante grandes y necesito que todo funcione sin sorpresas. Antes tenía una laptop que tardaba casi tres minutos en abrir un libro de cuentas complejo. Ahora eso es historia. Además el soporte post-venta fue impecable cuando tuve una duda técnica de configuración al inicio. Muy recomendado para profesionales.",
-                name: "Daniel M.",
-                age: 35,
-                role: "Contador independiente",
-                initial: "D",
-                region: "Guadalajara"
-              },
-              {
-                quote: "Pensé mucho antes de comprarla porque $469 no es poco dinero, pero cuando hice las cuentas de lo que pagaba mensualmente entre el ciber local y las reparaciones de mi equipo viejo defectuoso, me di cuenta de que era la decisión más inteligente. Mi hijo entrega sus tareas escolares a tiempo y yo puedo trabajar en mi turno de noche de manera cómoda. La garantía es real.",
-                name: "Rosa M.",
-                age: 42,
-                role: "Madre y trabajadora administrativa",
-                initial: "R",
-                region: "Puebla"
-              },
-              {
-                quote: "Llevaba meses buscando un puesto laboral de trabajo remoto pero no tenía equipo propio óptimo para la prueba técnica de código ni para las entrevistas virtuales fluidas por webcam. Compré esta laptop y a las dos semanas aprobé mi primer contrato junior. El equipo es sumamente fluido, la cámara web integrada enfoca bien y el audio integrado es muy claro.",
-                name: "Roberto V.",
-                age: 31,
-                role: "Desarrollador freelance junior",
-                initial: "R",
-                region: "Bogotá"
-              }
-            ].map((review, i) => (
-              <div 
-                key={i} 
-                className="bg-white border border-zinc-200 p-6 rounded-2xl flex flex-col justify-between shadow-3xs"
-              >
-                <div>
-                  <div className="flex justify-between items-start mb-4">
-                    <StarRating count={5} />
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Compra Verificada
-                    </span>
-                  </div>
-                  <p className="text-zinc-700 font-medium text-xs md:text-[13px] leading-relaxed italic mb-6">
-                    &ldquo;{review.quote}&rdquo;
-                  </p>
-                </div>
-
-                <div className="border-t border-zinc-100 pt-4 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 font-bold text-xs flex items-center justify-center shrink-0">
-                    {review.initial}
-                  </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-zinc-900">{review.name}, {review.age} años</h5>
-                    <p className="text-[10px] text-zinc-500 font-semibold">{review.role} · {review.region}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* BLOCK 8: GARANTÍA SIN RIESGO (LIGHT BLUE CORPORATE THEME) */}
       <section className="bg-gradient-to-br from-indigo-50/40 via-blue-50/30 to-white text-zinc-900 py-16 border-y border-zinc-200" id="garantia">
@@ -1543,143 +1438,162 @@ export default function App() {
                     💬 Chat +593 984729888
                   </a>
                 </div>
+
+                {/* Subtle Creator / Admin portal entry point */}
+                <button
+                  onClick={() => isAdminLoggedIn ? handleAdminLogout() : setIsAdminModalOpen(true)}
+                  className="w-full text-center py-2.5 mt-2 text-[10px] font-extrabold uppercase tracking-widest text-zinc-400 hover:text-blue-600 border border-dashed border-zinc-200 hover:border-blue-250 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  {isAdminLoggedIn ? '🚪 Cerrar Sesión Admin' : '🔑 Acceso Creador'}
+                </button>
               </div>
 
               {/* Main Content View Container */}
               <div className="lg:col-span-9 space-y-8">
                 {/* 🛠️ Dynamic Admin Control Panel ("Actualizar Todos los Equipos") */}
-                <div className="bg-white border border-blue-200 text-zinc-900 rounded-2xl p-6 shadow-sm space-y-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3 font-sans">
-                    <div>
-                      <span className="bg-blue-105 text-blue-700 font-extrabold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full">
-                        Panel Administrativo de Stock
-                      </span>
-                      <h3 className="font-black text-base text-zinc-900 mt-1">
-                        Actualizar Todos los Equipos
-                      </h3>
-                      <p className="text-[11px] text-zinc-500">
-                        Inserta nuevos productos o actualiza los precios y stock real al minuto para toda la tienda.
-                      </p>
-                    </div>
-                    
-                    {/* Select tool to edit */}
-                    <div className="shrink-0 flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-zinc-500">Editar equipo:</span>
-                      <select
-                        onChange={(e) => handleSelectProductToEdit(e.target.value)}
-                        className="bg-zinc-50 border border-zinc-200 text-xs font-bold py-2 px-3 rounded-lg text-zinc-800"
-                        value={editingProductId || 'new'}
-                      >
-                        <option value="new">➕ Agregar nuevo equipo al stock</option>
-                        {products.map(p => (
-                          <option key={p.id} value={p.id}>💻 {p.category.toUpperCase()}: {p.name} (${p.price})</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Form fields layout */}
-                  <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 font-sans text-zinc-900">
-                    <div className="lg:col-span-6 space-y-1">
-                      <label className="text-[10px] uppercase font-black text-zinc-500 block">Nombre del Equipo</label>
-                      <input
-                        type="text"
-                        value={formName}
-                        onChange={(e) => setFormName(e.target.value)}
-                        placeholder="Ej. Lenovo Ideapad Slim 3 Ryzen 3"
-                        className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
-                        required
-                      />
-                    </div>
-
-                    <div className="lg:col-span-3 space-y-1">
-                      <label className="text-[10px] uppercase font-black text-zinc-500 block">Precio (USD)</label>
-                      <input
-                        type="number"
-                        value={formPrice}
-                        onChange={(e) => setFormPrice(Number(e.target.value))}
-                        className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
-                        required
-                      />
-                    </div>
-
-                    <div className="lg:col-span-3 space-y-1">
-                      <label className="text-[10px] uppercase font-black text-zinc-500 block">Categoría de Menú</label>
-                      <select
-                        value={formCategory}
-                        onChange={(e) => setFormCategory(e.target.value)}
-                        className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl text-zinc-850 font-bold"
-                      >
-                        <option value="laptops">Laptops</option>
-                        <option value="cpus text-sans">CPUs / Escritorio</option>
-                        <option value="celulares">Celulares</option>
-                        <option value="impresoras">Impresoras</option>
-                        <option value="televisores">Televisores</option>
-                        <option value="proyectores">Proyectores</option>
-                      </select>
-                    </div>
-
-                    <div className="lg:col-span-8 space-y-1">
-                      <label className="text-[10px] uppercase font-black text-zinc-500 block">Especificaciones Técnicas (Una por línea)</label>
-                      <textarea
-                        value={formSpecs}
-                        onChange={(e) => setFormSpecs(e.target.value)}
-                        placeholder="AMD Ryzen 3&#13;8GB RAM LPDDR5&#13;512GB SSD PCIe"
-                        rows={3}
-                        className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-700"
-                      />
-                    </div>
-
-                    <div className="lg:col-span-4 space-y-1">
-                      <div className="space-y-1">
-                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Unidades Disponibles (Stock)</label>
-                        <input
-                          type="number"
-                          value={formStock}
-                          onChange={(e) => setFormStock(Number(e.target.value))}
-                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
-                        />
-                      </div>
-                      <div className="space-y-1 pt-1">
-                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Precio de Lista Original (USD)</label>
-                        <input
-                          type="number"
-                          value={formOriginalPrice}
-                          onChange={(e) => setFormOriginalPrice(Number(e.target.value))}
-                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-1.5 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold animate-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="lg:col-span-9 space-y-1">
-                      <label className="text-[10px] uppercase font-black text-zinc-500 block">Enlace de Imagen de Referencia</label>
-                      <input
-                        type="url"
-                        value={formImage}
-                        onChange={(e) => setFormImage(e.target.value)}
-                        placeholder="https://..."
-                        className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-600"
-                      />
-                    </div>
-
-                    <div className="lg:col-span-3 flex items-end">
+                {isAdminLoggedIn && (
+                  <div className="bg-white border-2 border-dashed border-blue-400 text-zinc-900 rounded-2xl p-6 shadow-md space-y-5 relative">
+                    <div className="absolute top-4 right-4">
                       <button
-                        type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase py-3.5 rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+                        onClick={handleAdminLogout}
+                        className="bg-red-50 text-red-650 hover:bg-red-100 text-[10px] font-black uppercase px-2.5 py-1 rounded-lg border border-red-200 cursor-pointer flex items-center gap-1 transition-all"
                       >
-                        {editingProductId === 'new' ? '➕ Publicar Equipo' : '💾 Guardar Cambios'}
+                        🚪 Salir
                       </button>
                     </div>
-                  </form>
-
-                  {/* Status indicator message */}
-                  {adminStatus && (
-                    <div className="bg-amber-50 text-amber-805 font-bold text-xs p-3.5 rounded-xl border border-amber-200 flex items-center justify-between">
-                      <span>⚡ {adminStatus}</span>
-                      <button onClick={() => setAdminStatus('')} className="text-[10px] hover:text-black font-black uppercase text-amber-900 cursor-pointer">Cerrar</button>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-100 pb-3 font-sans pr-14">
+                      <div>
+                        <span className="bg-blue-100 text-blue-700 font-extrabold text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-full">
+                          Panel Administrativo de Stock 🔒 ACTIVO
+                        </span>
+                        <h3 className="font-black text-base text-zinc-900 mt-1">
+                          Actualizar Todos los Equipos
+                        </h3>
+                        <p className="text-[11px] text-zinc-500">
+                          Inserta nuevos productos o actualiza los precios y stock real al minuto para toda la tienda.
+                        </p>
+                      </div>
+                      
+                      {/* Select tool to edit */}
+                      <div className="shrink-0 flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-zinc-500">Editar equipo:</span>
+                        <select
+                          onChange={(e) => handleSelectProductToEdit(e.target.value)}
+                          className="bg-zinc-50 border border-zinc-200 text-xs font-bold py-2 px-3 rounded-lg text-zinc-800"
+                          value={editingProductId || 'new'}
+                        >
+                          <option value="new">➕ Agregar nuevo equipo al stock</option>
+                          {products.map(p => (
+                            <option key={p.id} value={p.id}>💻 {p.category.toUpperCase()}: {p.name} (${p.price})</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    {/* Form fields layout */}
+                    <form onSubmit={handleSaveProduct} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 font-sans text-zinc-900">
+                      <div className="lg:col-span-6 space-y-1 font-sans">
+                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Nombre del Equipo</label>
+                        <input
+                          type="text"
+                          value={formName}
+                          onChange={(e) => setFormName(e.target.value)}
+                          placeholder="Ej. Lenovo Ideapad Slim 3 Ryzen 3"
+                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
+                          required
+                        />
+                      </div>
+
+                      <div className="lg:col-span-3 space-y-1">
+                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Precio (USD)</label>
+                        <input
+                          type="number"
+                          value={formPrice}
+                          onChange={(e) => setFormPrice(Number(e.target.value))}
+                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
+                          required
+                        />
+                      </div>
+
+                      <div className="lg:col-span-3 space-y-1">
+                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Categoría de Menú</label>
+                        <select
+                          value={formCategory}
+                          onChange={(e) => setFormCategory(e.target.value)}
+                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl text-zinc-850 font-bold"
+                        >
+                          <option value="laptops">Laptops</option>
+                          <option value="cpus text-sans">CPUs / Escritorio</option>
+                          <option value="celulares">Celulares</option>
+                          <option value="impresoras">Impresoras</option>
+                          <option value="televisores">Televisores</option>
+                          <option value="proyectores">Proyectores</option>
+                        </select>
+                      </div>
+
+                      <div className="lg:col-span-8 space-y-1">
+                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Especificaciones Técnicas (Una por línea)</label>
+                        <textarea
+                          value={formSpecs}
+                          onChange={(e) => setFormSpecs(e.target.value)}
+                          placeholder="AMD Ryzen 3&#13;8GB RAM LPDDR5&#13;512GB SSD PCIe"
+                          rows={3}
+                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-750 font-medium"
+                        />
+                      </div>
+
+                      <div className="lg:col-span-4 space-y-1">
+                        <div className="space-y-1">
+                          <label className="text-[10px] uppercase font-black text-zinc-500 block">Unidades Disponibles (Stock)</label>
+                          <input
+                            type="number"
+                            value={formStock}
+                            onChange={(e) => setFormStock(Number(e.target.value))}
+                            className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
+                          />
+                        </div>
+                        <div className="space-y-1 pt-1">
+                          <label className="text-[10px] uppercase font-black text-zinc-500 block">Precio de Lista Original (USD)</label>
+                          <input
+                            type="number"
+                            value={formOriginalPrice}
+                            onChange={(e) => setFormOriginalPrice(Number(e.target.value))}
+                            className="w-full bg-zinc-50 border border-zinc-200 text-xs py-1.5 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-850 font-bold"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="lg:col-span-9 space-y-1">
+                        <label className="text-[10px] uppercase font-black text-zinc-500 block">Enlace de Imagen de Referencia</label>
+                        <input
+                          type="url"
+                          value={formImage}
+                          onChange={(e) => setFormImage(e.target.value)}
+                          placeholder="https://..."
+                          className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2 px-3 rounded-xl hover:bg-zinc-100/50 focus:bg-white transition-all text-zinc-600"
+                        />
+                      </div>
+
+                      <div className="lg:col-span-3 flex items-end">
+                        <button
+                          type="submit"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase py-3.5 rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-1.5 font-sans"
+                        >
+                          {editingProductId === 'new' ? '➕ Publicar Equipo' : '💾 Guardar Cambios'}
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Status indicator message */}
+                    {adminStatus && (
+                      <div className="bg-amber-50 text-amber-805 font-bold text-xs p-3.5 rounded-xl border border-amber-200 flex items-center justify-between font-sans">
+                        <span>⚡ {adminStatus}</span>
+                        <button onClick={() => setAdminStatus('')} className="text-[10px] hover:text-black font-black uppercase text-amber-900 cursor-pointer">Cerrar</button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Catalog Headline info */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-sans">
@@ -1792,11 +1706,19 @@ export default function App() {
       )}
 
       {/* FOOTER */}
-      <footer className="bg-zinc-950 text-zinc-650 py-10 text-xs border-t border-zinc-90 w-full text-center font-sans tracking-wide space-y-2">
+      <footer className="bg-zinc-950 text-zinc-650 py-10 text-xs border-t border-zinc-90 w-full text-center font-sans tracking-wide space-y-3">
         <p className="font-semibold text-zinc-500">Digital Tech Ecuador © {new Date().getFullYear()} — Todos los derechos reservados.</p>
         <p className="max-w-2xl mx-auto px-4 text-[10px] text-zinc-600 leading-normal">
           Nuestras laptops están protegidas bajo regulaciones de importación oficiales secundadas por la póliza de garantía de Digital Tech. Este portal representa una landing page directa para fomento de conversión prioritaria de inventario vigente.
         </p>
+        <div className="pt-2">
+          <button
+            onClick={() => isAdminLoggedIn ? handleAdminLogout() : setIsAdminModalOpen(true)}
+            className="text-[9px] font-black tracking-widest uppercase text-zinc-600 hover:text-blue-500 transition-colors cursor-pointer"
+          >
+            {isAdminLoggedIn ? '🚪 Cerrar Sesión Administrador' : '🔐 Acceso Panel Creador'}
+          </button>
+        </div>
       </footer>
 
       {/* FLOAT STICKY BOTTOM DE CONVERSIÓN EXCELENTE (BOOST SALES RATIO) */}
@@ -1856,6 +1778,78 @@ export default function App() {
         productTitle={checkoutProductTitle}
         productId={checkoutProductId}
       />
+
+      {/* Dynamic Admin Login Modal */}
+      <AnimatePresence>
+        {isAdminModalOpen && (
+          <div className="fixed inset-0 bg-zinc-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white text-zinc-900 border border-zinc-200 w-full max-w-sm rounded-3xl p-6 shadow-2xl relative font-sans"
+            >
+              <button
+                onClick={() => setIsAdminModalOpen(false)}
+                className="absolute top-4.5 right-4.5 text-zinc-405 hover:text-zinc-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="space-y-4">
+                <div className="text-center space-y-1">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full mx-auto flex items-center justify-center text-blue-600 text-lg mb-2 text-center">
+                    🔒
+                  </div>
+                  <h3 className="font-black text-lg text-zinc-900 tracking-tight">Acceso Administrador</h3>
+                  <p className="text-[11px] text-zinc-500 leading-normal font-semibold px-4">
+                    Introduce tus credenciales para actualizar precios, stock y publicar nuevos computadores.
+                  </p>
+                </div>
+
+                <form onSubmit={handleAdminLogin} className="space-y-4 pt-2">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-zinc-500 block">Usuario</label>
+                    <input
+                      type="text"
+                      value={adminUser}
+                      onChange={(e) => setAdminUser(e.target.value)}
+                      placeholder="Ej. admin"
+                      className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2.5 px-3.5 rounded-xl focus:bg-white text-zinc-850 font-bold outline-none"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-zinc-500 block">Clave de Acceso</label>
+                    <input
+                      type="password"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full bg-zinc-50 border border-zinc-200 text-xs py-2.5 px-3.5 rounded-xl focus:bg-white text-zinc-850 font-bold outline-none"
+                      required
+                    />
+                  </div>
+
+                  {adminLoginError && (
+                    <p className="text-[10px] text-red-650 font-extrabold flex items-center gap-1 bg-red-50 border border-red-150 p-2.5 rounded-lg">
+                      ⚠️ {adminLoginError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-xl transition-all shadow-md cursor-pointer uppercase tracking-widest mt-2"
+                  >
+                    🔑 Entrar al Sistema
+                  </button>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

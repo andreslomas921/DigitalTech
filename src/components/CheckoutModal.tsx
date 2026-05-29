@@ -779,7 +779,7 @@ Por favor revise el comprobante y realice el despacho a la dirección especifica
                           <Truck className="w-4 h-4 inline" /> {form.paymentMethod === 'transfer' ? 'Transferencia Bancaria' : 'Contra Entrega Física'}
                         </p>
                         <p className="text-zinc-500 mt-2">
-                          Se redireccionó automáticamente el pedido a Sergio Andrés Lomas. Si por alguna razón la ventana no cargó, puedes usar los controles de abajo.
+                          Se redireccionó automáticamente el pedido a Sergio Andrés Lomas Camacho. Si por alguna razón la ventana no cargó, puedes usar los controles de abajo.
                         </p>
                       </div>
                     </div>
